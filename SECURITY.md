@@ -1,5 +1,13 @@
 # Security policy
 
-Please report security issues privately through GitHub's security advisory feature instead of opening a public issue.
+## Supported versions
 
-Never include live API keys, private profile data, exported contacts, or credentials in a report. If a key is accidentally committed, revoke it immediately and remove it from the repository history before publishing again.
+Security fixes are applied to the latest published release.
+
+## Reporting a vulnerability
+
+Report vulnerabilities privately through GitHub's security advisory feature. Do not open a public issue for a vulnerability and never include live API keys, private profile data, contact exports, or credentials.
+
+Please include the affected version, impact, reproduction steps using synthetic data, and any suggested remediation. Acknowledgement is targeted within seven days.
+
+If a key is accidentally committed or shared, revoke it immediately. Rewriting Git history does not make a credential safe again.
