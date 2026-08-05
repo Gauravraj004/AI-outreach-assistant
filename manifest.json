@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "AI Outreach Assistant",
+  "version": "1.0.0",
+  "description": "Draft personalized LinkedIn outreach with Gemini while keeping the user in control.",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://*.linkedin.com/*",
+    "https://generativelanguage.googleapis.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*.linkedin.com/in/*"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ]
+}
