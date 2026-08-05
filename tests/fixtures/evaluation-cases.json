@@ -1,0 +1,15 @@
+[
+  {
+    "id": "connection-compliant",
+    "objective": "connection",
+    "recipientName": "Sam",
+    "message": "Hi Sam, your work on reliable climate-data systems stood out. I build backend data products and would value connecting to learn from your platform experience. Best, Alex"
+  },
+  {
+    "id": "direct-grounded",
+    "objective": "direct_message",
+    "recipientName": "Mira",
+    "requiredPhrase": "security tooling",
+    "message": "Hi Mira, your work on security tooling caught my attention.\n\nI build reliable backend services and am exploring teams solving practical infrastructure problems. Your focus feels closely aligned with the systems work I enjoy.\n\nIf you are open to it, I would value a short conversation about your experience and the problems your team is tackling.\n\nBest,\nAlex"
+  }
+]

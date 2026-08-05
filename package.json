@@ -1,0 +1,35 @@
+{
+  "name": "ai-outreach-assistant",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A human-in-the-loop Chrome extension for personalized LinkedIn outreach drafts using Gemini.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && vite build --config vite.content.config.js",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "evaluate": "node scripts/evaluate.mjs",
+    "check": "npm run format:check && npm run lint && npm run test:coverage && npm run build && npm run evaluate",
+    "package": "npm run build && cd dist && zip -r ../ai-outreach-assistant.zip ."
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.62.1",
+    "@vitest/coverage-v8": "^4.1.10",
+    "eslint": "^10.8.0",
+    "globals": "^17.4.0",
+    "jsdom": "^30.0.1",
+    "prettier": "^3.9.6",
+    "vite": "^8.2.0",
+    "vitest": "^4.1.10"
+  }
+}
