@@ -2,6 +2,15 @@
 
 This project follows [Semantic Versioning](https://semver.org/).
 
+## 1.1.0 - 2026-08-07
+
+### Added
+
+- Local recent-draft history with explicit restore and clear controls
+- Guided sender-profile setup with local PDF, text, and Markdown resume import, plus an explicit one-request Gemini profile generator
+- First-run setup guidance, reusable outreach goals, and non-blocking draft review warnings
+- Local data export that deliberately excludes API keys
+
 ## 1.0.0 - 2026-08-06
 
 ### Added
