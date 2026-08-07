@@ -25,6 +25,17 @@ export async function clearDrafts(storage = chrome.storage.local) {
   await storage.remove([STORAGE_KEYS.DRAFTS]);
 }
 
+export async function exportLocalData(storage = chrome.storage.local) {
+  const settings = await loadSettings(storage);
+  const drafts = await loadDrafts(storage);
+  return {
+    schemaVersion: 1,
+    exportedAt: new Date().toISOString(),
+    settings: { ...settings, apiKey: undefined },
+    drafts,
+  };
+}
+
 export async function saveDraft(draft, storage = chrome.storage.local) {
   const drafts = await loadDrafts(storage);
   const next = [
