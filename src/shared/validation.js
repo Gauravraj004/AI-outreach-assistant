@@ -43,6 +43,23 @@ export function messageLengthState(message, objective) {
   };
 }
 
+export function draftWarnings(message, recipientName = "") {
+  const value = String(message || "");
+  const warnings = [];
+  if (/\[.+?\]|\{\{.+?\}\}|<.+?>/.test(value))
+    warnings.push("Replace any remaining placeholders before copying.");
+  if (
+    recipientName &&
+    !value.toLowerCase().includes(recipientName.toLowerCase())
+  )
+    warnings.push("Check that the draft addresses the intended recipient.");
+  if (/\b(?:guarantee|guaranteed|best|perfect)\b/i.test(value))
+    warnings.push(
+      "Review strong claims to ensure they are truthful and specific.",
+    );
+  return warnings;
+}
+
 export function truncateProfile(text) {
   return String(text || "").slice(0, LIMITS.PROFILE_CHARACTERS);
 }
