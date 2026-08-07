@@ -24,7 +24,7 @@ Writing relevant outreach takes research and care. This project reduces blank-pa
 - Robust profile extraction with noise removal, deduplication, and a 12,000-character cap
 - Structured JSON parsing and human-readable API errors
 - Editable draft, live character limit, regenerate, and copy controls
-- Optional local storage for only the five most recent drafts
+- Optional local storage for only the five most recent drafts, with restore and clear controls
 - One-click deletion of all locally stored extension data
 - No backend, analytics, automated sending, or bulk scraping
 
