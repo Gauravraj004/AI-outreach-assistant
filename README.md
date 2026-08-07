@@ -1,3 +1,7 @@
+<div align="center">
+<img src="assets/banner.svg" alt="AI Outreach Assistant" width="100%" />
+</div>
+
 # AI Outreach Assistant
 
 [![CI](https://github.com/Gauravraj004/AI-outreach-assistant/actions/workflows/ci.yml/badge.svg)](https://github.com/Gauravraj004/AI-outreach-assistant/actions/workflows/ci.yml)
@@ -14,6 +18,12 @@ The extension never sends a message, clicks LinkedIn action buttons, or runs bul
 
 Writing relevant outreach takes research and care. This project reduces blank-page work without removing human judgment. It demonstrates browser-extension architecture, prompt grounding, privacy-aware product design, structured model output, automated testing, and release engineering.
 
+## Architecture
+
+<img src="assets/architecture.svg" alt="AI Outreach Assistant architecture" width="100%" />
+
+The API key, sender profile, preferences, and optional recent drafts are stored in `chrome.storage.local`. When the user clicks **Generate**, up to 12,000 characters of visible profile text plus sender context and instructions are sent directly to Google's Gemini API. See [PRIVACY.md](PRIVACY.md) and the [threat model](docs/THREAT_MODEL.md).
+
 ## Features
 
 - Direct-message and connection-note workflows
@@ -27,7 +37,7 @@ Writing relevant outreach takes research and care. This project reduces blank-pa
 - Structured JSON parsing and human-readable API errors
 - Editable draft, live character limit, regenerate, and copy controls
 - Optional local storage for only the five most recent drafts, with restore and clear controls
-- Local data export (excluding API keys) and one-click deletion of all locally stored extension data
+- Local data export excluding API keys, plus one-click deletion of locally stored extension data
 - Non-blocking review warnings for placeholders, recipient mismatch, and overly strong claims
 - No backend, analytics, automated sending, or bulk scraping
 
@@ -48,24 +58,10 @@ Then:
 2. Enable **Developer mode**.
 3. Select **Load unpacked**.
 4. Choose the generated `dist/` folder.
-5. Open the extension settings and add a dedicated [Gemini API key](https://aistudio.google.com/apikey). Upload a PDF, `.txt`, or `.md` resume once; the extension reads it locally. If you opt in, **Create profile** uses one Gemini request to create an editable sender profile and prefill your name when clear. Review and save it before generating outreach.
+5. Open the extension settings and add a dedicated Gemini API key. Upload a PDF, `.txt`, or `.md` resume once; the extension reads it locally. If you opt in, **Create profile** uses one Gemini request to create an editable sender profile and prefill your name when clear. Review and save it before generating outreach.
 6. Visit a LinkedIn member profile, preview the extracted information, approve the request, and generate a draft.
 
-## Data flow
-
-```mermaid
-flowchart LR
-  A["Visible LinkedIn profile"] --> B["Local extraction and minimization"]
-  C["Local sender settings"] --> D{"Explicit user consent"}
-  B --> D
-  D -->|Approved| E["Gemini API"]
-  E --> F["Editable draft"]
-  F --> G["Manual copy and send"]
-```
-
-The API key, sender profile, preferences, and optional recent drafts are stored in `chrome.storage.local`. When the user clicks **Generate**, up to 12,000 characters of visible profile text plus the sender context and instructions are sent directly to Google's Gemini API. See [PRIVACY.md](PRIVACY.md) and the [threat model](docs/THREAT_MODEL.md).
-
-## Architecture
+## Code structure
 
 ```text
 src/
@@ -91,10 +87,6 @@ Unit tests cover prompt construction, response parsing, storage behavior, API fa
 ## Evaluation
 
 `npm run evaluate` executes deterministic checks against anonymized fixtures for connection-note length, recipient-name inclusion, required grounding phrases, and placeholder leakage. This is an engineering regression suite, not a scientific model-quality benchmark. See [docs/EVALUATION.md](docs/EVALUATION.md).
-
-## Demo
-
-The popup preview above shows the review-first workflow: setup a local sender profile, preview visible recipient data, choose an outreach goal, generate, then edit and copy manually. No action is sent automatically.
 
 ## Responsible use
 
