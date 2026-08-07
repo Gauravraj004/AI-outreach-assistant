@@ -1,17 +1,28 @@
 import { buildPrompt } from "../prompts/build-prompt.js";
+import { buildSenderProfilePrompt } from "../prompts/build-sender-profile-prompt.js";
 import { getBrowserApi } from "../services/browser-api.js";
 import { generateDraft, GeminiError } from "../services/gemini-client.js";
+import { loadResumeFile } from "../services/resume-import.js";
 import {
   clearDrafts,
   clearLocalData,
+  exportLocalData,
   loadDrafts,
   loadSettings,
   saveDraft,
   saveSettings,
 } from "../services/storage.js";
 import { DEFAULT_SETTINGS } from "../shared/constants.js";
-import { parseDraftResponse } from "../shared/json-response.js";
-import { messageLengthState, validateSettings } from "../shared/validation.js";
+import {
+  parseDraftResponse,
+  parseSenderProfileResponse,
+} from "../shared/json-response.js";
+import {
+  isValidGeminiApiKey,
+  messageLengthState,
+  validateSettings,
+  draftWarnings,
+} from "../shared/validation.js";
 
 const byId = (id) => document.getElementById(id);
 const browserApi = getBrowserApi();
@@ -24,9 +35,16 @@ const ui = {
   modelName: byId("model-name"),
   senderName: byId("sender-name"),
   senderContext: byId("sender-context"),
+  resumeFile: byId("resume-file"),
+  resumeImportStatus: byId("resume-import-status"),
+  resumeAnalysis: byId("resume-analysis"),
+  resumeConsent: byId("resume-consent"),
+  analyzeResume: byId("analyze-resume"),
   saveDrafts: byId("save-drafts"),
   saveSettings: byId("save-settings"),
   deleteData: byId("delete-data"),
+  exportData: byId("export-data"),
+  onboarding: byId("onboarding"),
   statusBar: byId("status-bar"),
   statusText: byId("status-text"),
   profilePreview: byId("profile-preview"),
@@ -36,6 +54,7 @@ const ui = {
   refreshProfile: byId("refresh-profile"),
   tone: byId("tone"),
   length: byId("length"),
+  intent: byId("intent"),
   customNotes: byId("custom-notes"),
   consent: byId("consent"),
   generate: byId("generate-btn"),
@@ -44,6 +63,7 @@ const ui = {
   focusBadge: byId("focus-badge"),
   charCounter: byId("char-counter"),
   output: byId("output-text"),
+  draftWarnings: byId("draft-warnings"),
   regenerate: byId("regenerate-btn"),
   copy: byId("copy-btn"),
   draftHistory: byId("draft-history"),
@@ -56,6 +76,7 @@ const state = {
   activeTab: null,
   profile: null,
   loading: false,
+  resume: null,
 };
 
 const objective = () =>
@@ -86,7 +107,12 @@ function bindEvents() {
   );
   ui.toggleKey.addEventListener("click", toggleKeyVisibility);
   ui.saveSettings.addEventListener("click", handleSaveSettings);
+  ui.resumeFile.addEventListener("change", handleResumeImport);
+  ui.apiKey.addEventListener("input", refreshResumeAnalysisState);
+  ui.resumeConsent.addEventListener("change", refreshResumeAnalysisState);
+  ui.analyzeResume.addEventListener("click", handleResumeAnalysis);
   ui.deleteData.addEventListener("click", handleDeleteData);
+  ui.exportData.addEventListener("click", handleExportData);
   ui.refreshProfile.addEventListener("click", refreshProfile);
   ui.generate.addEventListener("click", handleGenerate);
   ui.regenerate.addEventListener("click", handleGenerate);
@@ -101,6 +127,71 @@ function bindEvents() {
       updateCharacterCount();
     });
   });
+}
+
+async function handleResumeImport(event) {
+  const [file] = event.target.files || [];
+  if (!file) return;
+
+  hideError();
+  try {
+    const resume = await loadResumeFile(file);
+    state.resume = resume;
+    ui.resumeConsent.checked = false;
+    ui.resumeAnalysis.classList.remove("hidden");
+    ui.resumeImportStatus.textContent = `${resume.label} Create a concise profile with one Gemini request, or paste/edit it manually.`;
+    refreshResumeAnalysisState();
+  } catch (error) {
+    ui.resumeImportStatus.textContent = "";
+    showError(error.message);
+  } finally {
+    ui.resumeFile.value = "";
+  }
+}
+
+function refreshResumeAnalysisState() {
+  ui.analyzeResume.disabled = !(
+    state.resume &&
+    ui.resumeConsent.checked &&
+    isValidGeminiApiKey(ui.apiKey.value)
+  );
+}
+
+async function handleResumeAnalysis() {
+  if (!state.resume || !ui.resumeConsent.checked) return;
+  if (!isValidGeminiApiKey(ui.apiKey.value)) {
+    showError("Add a valid Gemini API key before creating a sender profile.");
+    return;
+  }
+
+  hideError();
+  ui.analyzeResume.disabled = true;
+  ui.analyzeResume.textContent = "Creating profile…";
+  try {
+    const raw = await generateDraft({
+      apiKey: ui.apiKey.value.trim(),
+      modelName: ui.modelName.value.trim(),
+      prompt: buildSenderProfilePrompt(
+        state.resume.promptText,
+        Boolean(state.resume.attachment),
+      ),
+      maxOutputTokens: 1200,
+      attachments: state.resume.attachment ? [state.resume.attachment] : [],
+    });
+    const profile = parseSenderProfileResponse(raw);
+    if (!ui.senderName.value.trim() && profile.senderName)
+      ui.senderName.value = profile.senderName;
+    ui.senderContext.value = profile.senderContext;
+    state.resume = null;
+    ui.resumeAnalysis.classList.add("hidden");
+    ui.resumeImportStatus.textContent =
+      "Profile created. Review it, then save settings to keep it on this device.";
+  } catch (error) {
+    showError(errorMessage(error));
+  } finally {
+    ui.analyzeResume.textContent = "Create profile (1 request)";
+    refreshResumeAnalysisState();
+  }
 }
 
 function isLinkedInProfile(url = "") {
@@ -121,6 +212,7 @@ function populateSettingsForm() {
   ui.senderName.value = state.settings.senderName;
   ui.senderContext.value = state.settings.senderContext;
   ui.saveDrafts.checked = state.settings.saveDrafts;
+  refreshResumeAnalysisState();
 }
 
 function settingsFromForm() {
@@ -149,6 +241,19 @@ async function handleSaveSettings() {
   refreshGenerateState();
 }
 
+async function handleExportData() {
+  const data = await exportLocalData(browserApi.storage.local);
+  const blob = new Blob([JSON.stringify(data, null, 2)], {
+    type: "application/json",
+  });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "ai-outreach-assistant-data.json";
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
 async function handleDeleteData() {
   const approved = window.confirm(
     "Delete the API key, sender profile, settings, and saved drafts from this browser?",
@@ -163,6 +268,7 @@ async function handleDeleteData() {
   showError("Local extension data was deleted.");
   setSettingsOpen(true);
   refreshGenerateState();
+  renderOnboarding();
 }
 
 function toggleKeyVisibility() {
@@ -244,6 +350,7 @@ async function handleGenerate() {
       tone: ui.tone.value,
       length: ui.length.value,
       notes: ui.customNotes.value.trim(),
+      intent: ui.intent.value,
     });
     const raw = await generateDraft({
       apiKey: state.settings.apiKey,
@@ -311,6 +418,23 @@ function renderDraft(draft) {
   ui.focusBadge.textContent = draft.category;
   ui.results.classList.remove("hidden");
   updateCharacterCount();
+  renderDraftWarnings();
+}
+
+function renderDraftWarnings() {
+  const warnings = draftWarnings(ui.output.value, state.profile?.name);
+  ui.draftWarnings.replaceChildren();
+  for (const warning of warnings) {
+    const item = document.createElement("li");
+    item.textContent = warning;
+    ui.draftWarnings.append(item);
+  }
+  ui.draftWarnings.classList.toggle("hidden", !warnings.length);
+}
+
+function renderOnboarding() {
+  const done = validateSettings(state.settings).valid;
+  ui.onboarding.classList.toggle("hidden", done);
 }
 
 function errorMessage(error) {
@@ -352,6 +476,7 @@ function updateCharacterCount() {
   ui.copy.title = info.overLimit
     ? "Shorten the connection note before copying."
     : "Copy the reviewed draft";
+  renderDraftWarnings();
 }
 
 async function copyDraft() {
