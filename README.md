@@ -17,15 +17,18 @@ Writing relevant outreach takes research and care. This project reduces blank-pa
 ## Features
 
 - Direct-message and connection-note workflows
+- First-run setup checklist and reusable networking, recruiting, collaboration, and founder-conversation goals
 - Explicit preview and consent before profile data leaves the browser
 - Configurable tone, length, sender profile, and Gemini model
+- Guided in-extension sender-profile setup, with local resume import and review
 - Bring-your-own-key setup stored in Chrome local extension storage
 - API key sent through the `x-goog-api-key` header instead of the URL
 - Robust profile extraction with noise removal, deduplication, and a 12,000-character cap
 - Structured JSON parsing and human-readable API errors
 - Editable draft, live character limit, regenerate, and copy controls
 - Optional local storage for only the five most recent drafts, with restore and clear controls
-- One-click deletion of all locally stored extension data
+- Local data export (excluding API keys) and one-click deletion of all locally stored extension data
+- Non-blocking review warnings for placeholders, recipient mismatch, and overly strong claims
 - No backend, analytics, automated sending, or bulk scraping
 
 ## Install from source
@@ -45,7 +48,7 @@ Then:
 2. Enable **Developer mode**.
 3. Select **Load unpacked**.
 4. Choose the generated `dist/` folder.
-5. Open the extension settings and add a dedicated [Gemini API key](https://aistudio.google.com/apikey), your name, and a truthful sender profile.
+5. Open the extension settings and add a dedicated [Gemini API key](https://aistudio.google.com/apikey). Upload a PDF, `.txt`, or `.md` resume once; the extension reads it locally. If you opt in, **Create profile** uses one Gemini request to create an editable sender profile and prefill your name when clear. Review and save it before generating outreach.
 6. Visit a LinkedIn member profile, preview the extracted information, approve the request, and generate a draft.
 
 ## Data flow
@@ -89,6 +92,10 @@ Unit tests cover prompt construction, response parsing, storage behavior, API fa
 
 `npm run evaluate` executes deterministic checks against anonymized fixtures for connection-note length, recipient-name inclusion, required grounding phrases, and placeholder leakage. This is an engineering regression suite, not a scientific model-quality benchmark. See [docs/EVALUATION.md](docs/EVALUATION.md).
 
+## Demo
+
+The popup preview above shows the review-first workflow: setup a local sender profile, preview visible recipient data, choose an outreach goal, generate, then edit and copy manually. No action is sent automatically.
+
 ## Responsible use
 
 Use the extension for relevant, truthful, low-volume communication. Follow LinkedIn's terms, applicable privacy and anti-spam laws, and recipient preferences. Do not use it for deceptive claims, automated sending, bulk scraping, or harassment. Generated text can be wrong and must be reviewed.
@@ -98,6 +105,10 @@ Use the extension for relevant, truthful, low-volume communication. Follow Linke
 - Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
 - Report vulnerabilities using the instructions in [SECURITY.md](SECURITY.md).
 - Review planned changes in [CHANGELOG.md](CHANGELOG.md).
+
+## Author
+
+Created and maintained by [Gaurav Raj](https://github.com/Gauravraj004).
 
 ## License
 

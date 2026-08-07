@@ -6,7 +6,7 @@ AI Outreach Assistant is a locally installed, open-source Chrome extension. It h
 
 ## Data stored locally
 
-The extension can store the Gemini API key supplied by the user, sender details, model preferences, and up to five recent drafts when the user explicitly enables this option. The **Delete local data** control removes all of these values.
+The extension can store the Gemini API key supplied by the user, sender details, model preferences, and up to five recent drafts when the user explicitly enables this option. A selected resume is parsed locally; the original file is not uploaded or retained by the extension. If the user explicitly checks the resume consent box and clicks **Create profile**, the imported resume text is sent to Gemini in one request to produce an editable sender profile. The **Delete local data** control removes all stored values.
 
 ## Data sent to Gemini
 
