@@ -2,7 +2,9 @@ import { buildPrompt } from "../prompts/build-prompt.js";
 import { getBrowserApi } from "../services/browser-api.js";
 import { generateDraft, GeminiError } from "../services/gemini-client.js";
 import {
+  clearDrafts,
   clearLocalData,
+  loadDrafts,
   loadSettings,
   saveDraft,
   saveSettings,
@@ -44,6 +46,9 @@ const ui = {
   output: byId("output-text"),
   regenerate: byId("regenerate-btn"),
   copy: byId("copy-btn"),
+  draftHistory: byId("draft-history"),
+  draftHistoryList: byId("draft-history-list"),
+  clearDraftHistory: byId("clear-draft-history"),
 };
 
 const state = {
@@ -61,6 +66,7 @@ async function init() {
   bindEvents();
   state.settings = await loadSettings(browserApi.storage.local);
   populateSettingsForm();
+  await renderDraftHistory();
 
   const [tab] = await browserApi.tabs.query({
     active: true,
@@ -85,6 +91,7 @@ function bindEvents() {
   ui.generate.addEventListener("click", handleGenerate);
   ui.regenerate.addEventListener("click", handleGenerate);
   ui.copy.addEventListener("click", copyDraft);
+  ui.clearDraftHistory.addEventListener("click", handleClearDraftHistory);
   ui.consent.addEventListener("change", refreshGenerateState);
   ui.output.addEventListener("input", updateCharacterCount);
   document.querySelectorAll('input[name="objective"]').forEach((input) => {
@@ -255,12 +262,48 @@ async function handleGenerate() {
         },
         browserApi.storage.local,
       );
+      await renderDraftHistory();
     }
   } catch (error) {
     showError(errorMessage(error));
   } finally {
     setLoading(false);
   }
+}
+
+async function renderDraftHistory() {
+  const drafts = await loadDrafts(browserApi.storage.local);
+  ui.draftHistoryList.replaceChildren();
+
+  if (!drafts.length) {
+    ui.draftHistory.classList.add("hidden");
+    return;
+  }
+
+  for (const draft of drafts) {
+    const item = document.createElement("li");
+    const button = document.createElement("button");
+    const message = String(draft.message || "").trim();
+    button.type = "button";
+    button.className = "draft-history-item";
+    button.textContent = message.slice(0, 110) || "Untitled draft";
+    button.title = "Restore this saved draft";
+    button.addEventListener("click", () => {
+      ui.output.value = message;
+      ui.focusBadge.textContent = draft.category || "saved";
+      ui.results.classList.remove("hidden");
+      updateCharacterCount();
+    });
+    item.append(button);
+    ui.draftHistoryList.append(item);
+  }
+  ui.draftHistory.classList.remove("hidden");
+}
+
+async function handleClearDraftHistory() {
+  await clearDrafts(browserApi.storage.local);
+  await renderDraftHistory();
+  updateStatus("success", "Saved drafts were deleted from this browser.");
 }
 
 function renderDraft(draft) {
