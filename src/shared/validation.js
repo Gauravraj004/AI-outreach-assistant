@@ -1,12 +1,18 @@
 import { DEFAULT_SETTINGS, LIMITS } from "./constants.js";
 
+export function isValidGeminiApiKey(apiKey) {
+  return /^AIza[\w-]{20,}$/.test(String(apiKey || "").trim());
+}
+
 export function normalizeSettings(value = {}) {
   return {
     ...DEFAULT_SETTINGS,
     apiKey: String(value.apiKey || "").trim(),
     modelName: String(value.modelName || DEFAULT_SETTINGS.modelName).trim(),
     senderName: String(value.senderName || "").trim(),
-    senderContext: String(value.senderContext || "").trim(),
+    senderContext: String(value.senderContext || "")
+      .trim()
+      .slice(0, LIMITS.SENDER_CONTEXT_CHARACTERS),
     saveDrafts: value.saveDrafts === true,
   };
 }
@@ -15,7 +21,7 @@ export function validateSettings(value) {
   const settings = normalizeSettings(value);
   const errors = {};
 
-  if (!/^AIza[\w-]{20,}$/.test(settings.apiKey))
+  if (!isValidGeminiApiKey(settings.apiKey))
     errors.apiKey = "Enter a valid Gemini API key.";
   if (!/^[\w.-]+$/.test(settings.modelName))
     errors.modelName = "Choose a valid Gemini model.";

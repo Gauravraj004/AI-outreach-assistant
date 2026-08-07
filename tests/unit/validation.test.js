@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  isValidGeminiApiKey,
   messageLengthState,
   normalizeSettings,
   truncateProfile,
@@ -7,6 +8,11 @@ import {
 } from "../../src/shared/validation.js";
 
 describe("settings validation", () => {
+  it("recognizes Gemini API-key syntax", () => {
+    expect(isValidGeminiApiKey(`AIza${"a".repeat(32)}`)).toBe(true);
+    expect(isValidGeminiApiKey("not-a-key")).toBe(false);
+  });
+
   it("accepts a complete BYOK configuration", () => {
     const result = validateSettings({
       apiKey: `AIza${"a".repeat(32)}`,

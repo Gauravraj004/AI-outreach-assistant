@@ -48,3 +48,25 @@ test("exposes the data-deletion control", async ({ page }) => {
     page.getByRole("button", { name: "Delete local data" }),
   ).toBeVisible();
 });
+
+test("guides a user through one-request resume profile setup", async ({
+  page,
+}) => {
+  await page.locator("#api-key").fill(`AIza${"a".repeat(32)}`);
+  await page.locator("#resume-file").setInputFiles({
+    name: "resume.txt",
+    mimeType: "text/plain",
+    buffer: Buffer.from(
+      "Alex Morgan\nProduct engineer building privacy-conscious developer tools.",
+    ),
+  });
+
+  await expect(page.getByText(/Read \d+ characters locally/)).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Create profile (1 request)" }),
+  ).toBeDisabled();
+  await page.locator("#resume-consent").check();
+  await expect(
+    page.getByRole("button", { name: "Create profile (1 request)" }),
+  ).toBeEnabled();
+});

@@ -47,6 +47,12 @@
           Gemini only when you approve a generation request.
         </p>
 
+        <ol class="setup-steps">
+          <li>Add a dedicated Gemini key.</li>
+          <li>Enter your name and a truthful sender profile.</li>
+          <li>Review and save before generating a draft.</li>
+        </ol>
+
         <div class="field">
           <label for="api-key">Gemini API key</label>
           <div class="secret-field">
@@ -98,13 +104,52 @@
           <textarea
             id="sender-context"
             rows="5"
-            maxlength="3000"
+            maxlength="6000"
             placeholder="Summarize relevant experience, proof points, strengths, and what you are seeking."
           ></textarea>
           <small
             >Do not include secrets or information you would not send to an AI
             provider.</small
           >
+          <div class="resume-import">
+            <input
+              id="resume-file"
+              type="file"
+              accept=".pdf,.txt,.md,application/pdf,text/plain,text/markdown"
+            />
+            <label
+              for="resume-file"
+              class="button secondary resume-import-button"
+            >
+              Import resume
+            </label>
+            <p id="resume-import-status" class="helper" role="status"></p>
+          </div>
+          <small
+            >Supports PDF, .txt, and .md files up to 500 KB. The file stays in
+            this browser; review the imported text before saving.</small
+          >
+          <div id="resume-analysis" class="resume-analysis hidden">
+            <label class="check-row" for="resume-consent">
+              <input id="resume-consent" type="checkbox" />
+              <span
+                >I understand my imported resume text will be sent to Gemini
+                once to create an editable sender profile.</span
+              >
+            </label>
+            <button
+              id="analyze-resume"
+              class="button secondary"
+              type="button"
+              disabled
+            >
+              Create profile (1 request)
+            </button>
+            <small
+              >Uses one Gemini request. Available quota depends on the selected
+              model and AI Studio project.</small
+            >
+          </div>
         </div>
 
         <label class="check-row compact" for="save-drafts">

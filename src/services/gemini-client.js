@@ -13,6 +13,7 @@ export async function generateDraft({
   modelName,
   prompt,
   maxOutputTokens,
+  attachments = [],
   fetchImpl = fetch,
   timeoutMs = 25000,
 }) {
@@ -29,7 +30,7 @@ export async function generateDraft({
           "x-goog-api-key": apiKey,
         },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
+          contents: [{ parts: [...attachments, { text: prompt }] }],
           generationConfig: {
             maxOutputTokens,
             responseMimeType: "application/json",
