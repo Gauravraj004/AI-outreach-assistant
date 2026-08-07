@@ -164,6 +164,9 @@
           <button id="delete-data" class="button danger" type="button">
             Delete local data
           </button>
+          <button id="export-data" class="button secondary" type="button">
+            Export data
+          </button>
         </div>
       </section>
 
@@ -173,6 +176,19 @@
       </div>
 
       <main>
+        <section
+          id="onboarding"
+          class="card onboarding"
+          aria-labelledby="onboarding-heading"
+        >
+          <p class="eyebrow">First-time setup</p>
+          <h2 id="onboarding-heading">Ready in three steps</h2>
+          <ol class="setup-steps">
+            <li>Add your Gemini key.</li>
+            <li>Import or write your sender profile.</li>
+            <li>Save settings, then review a profile.</li>
+          </ol>
+        </section>
         <section
           id="profile-preview"
           class="card profile-card hidden"
@@ -239,6 +255,16 @@
           </div>
 
           <div class="field">
+            <label for="intent">Outreach goal</label>
+            <select id="intent">
+              <option value="networking">Professional networking</option>
+              <option value="recruiting">Career opportunity</option>
+              <option value="collaboration">Collaboration</option>
+              <option value="founder">Founder / product conversation</option>
+            </select>
+          </div>
+
+          <div class="field">
             <label for="custom-notes">Optional context</label>
             <textarea
               id="custom-notes"
@@ -295,6 +321,11 @@
             Verify names, companies, and claims. The extension never sends
             messages for you.
           </p>
+          <ul
+            id="draft-warnings"
+            class="draft-warnings hidden"
+            aria-live="polite"
+          ></ul>
           <div class="button-row">
             <button id="regenerate-btn" class="button secondary" type="button">
               Regenerate

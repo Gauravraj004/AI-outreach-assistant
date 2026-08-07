@@ -6,6 +6,7 @@ import { loadResumeFile } from "../services/resume-import.js";
 import {
   clearDrafts,
   clearLocalData,
+  exportLocalData,
   loadDrafts,
   loadSettings,
   saveDraft,
@@ -20,6 +21,7 @@ import {
   isValidGeminiApiKey,
   messageLengthState,
   validateSettings,
+  draftWarnings,
 } from "../shared/validation.js";
 
 const byId = (id) => document.getElementById(id);
@@ -41,6 +43,8 @@ const ui = {
   saveDrafts: byId("save-drafts"),
   saveSettings: byId("save-settings"),
   deleteData: byId("delete-data"),
+  exportData: byId("export-data"),
+  onboarding: byId("onboarding"),
   statusBar: byId("status-bar"),
   statusText: byId("status-text"),
   profilePreview: byId("profile-preview"),
@@ -50,6 +54,7 @@ const ui = {
   refreshProfile: byId("refresh-profile"),
   tone: byId("tone"),
   length: byId("length"),
+  intent: byId("intent"),
   customNotes: byId("custom-notes"),
   consent: byId("consent"),
   generate: byId("generate-btn"),
@@ -58,6 +63,7 @@ const ui = {
   focusBadge: byId("focus-badge"),
   charCounter: byId("char-counter"),
   output: byId("output-text"),
+  draftWarnings: byId("draft-warnings"),
   regenerate: byId("regenerate-btn"),
   copy: byId("copy-btn"),
   draftHistory: byId("draft-history"),
@@ -106,6 +112,7 @@ function bindEvents() {
   ui.resumeConsent.addEventListener("change", refreshResumeAnalysisState);
   ui.analyzeResume.addEventListener("click", handleResumeAnalysis);
   ui.deleteData.addEventListener("click", handleDeleteData);
+  ui.exportData.addEventListener("click", handleExportData);
   ui.refreshProfile.addEventListener("click", refreshProfile);
   ui.generate.addEventListener("click", handleGenerate);
   ui.regenerate.addEventListener("click", handleGenerate);
@@ -234,6 +241,19 @@ async function handleSaveSettings() {
   refreshGenerateState();
 }
 
+async function handleExportData() {
+  const data = await exportLocalData(browserApi.storage.local);
+  const blob = new Blob([JSON.stringify(data, null, 2)], {
+    type: "application/json",
+  });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "ai-outreach-assistant-data.json";
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
 async function handleDeleteData() {
   const approved = window.confirm(
     "Delete the API key, sender profile, settings, and saved drafts from this browser?",
@@ -248,6 +268,7 @@ async function handleDeleteData() {
   showError("Local extension data was deleted.");
   setSettingsOpen(true);
   refreshGenerateState();
+  renderOnboarding();
 }
 
 function toggleKeyVisibility() {
@@ -329,6 +350,7 @@ async function handleGenerate() {
       tone: ui.tone.value,
       length: ui.length.value,
       notes: ui.customNotes.value.trim(),
+      intent: ui.intent.value,
     });
     const raw = await generateDraft({
       apiKey: state.settings.apiKey,
@@ -396,6 +418,23 @@ function renderDraft(draft) {
   ui.focusBadge.textContent = draft.category;
   ui.results.classList.remove("hidden");
   updateCharacterCount();
+  renderDraftWarnings();
+}
+
+function renderDraftWarnings() {
+  const warnings = draftWarnings(ui.output.value, state.profile?.name);
+  ui.draftWarnings.replaceChildren();
+  for (const warning of warnings) {
+    const item = document.createElement("li");
+    item.textContent = warning;
+    ui.draftWarnings.append(item);
+  }
+  ui.draftWarnings.classList.toggle("hidden", !warnings.length);
+}
+
+function renderOnboarding() {
+  const done = validateSettings(state.settings).valid;
+  ui.onboarding.classList.toggle("hidden", done);
 }
 
 function errorMessage(error) {
@@ -437,6 +476,7 @@ function updateCharacterCount() {
   ui.copy.title = info.overLimit
     ? "Shorten the connection note before copying."
     : "Copy the reviewed draft";
+  renderDraftWarnings();
 }
 
 async function copyDraft() {

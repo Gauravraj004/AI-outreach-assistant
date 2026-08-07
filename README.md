@@ -17,6 +17,7 @@ Writing relevant outreach takes research and care. This project reduces blank-pa
 ## Features
 
 - Direct-message and connection-note workflows
+- First-run setup checklist and reusable networking, recruiting, collaboration, and founder-conversation goals
 - Explicit preview and consent before profile data leaves the browser
 - Configurable tone, length, sender profile, and Gemini model
 - Guided in-extension sender-profile setup, with local resume import and review
@@ -26,7 +27,8 @@ Writing relevant outreach takes research and care. This project reduces blank-pa
 - Structured JSON parsing and human-readable API errors
 - Editable draft, live character limit, regenerate, and copy controls
 - Optional local storage for only the five most recent drafts, with restore and clear controls
-- One-click deletion of all locally stored extension data
+- Local data export (excluding API keys) and one-click deletion of all locally stored extension data
+- Non-blocking review warnings for placeholders, recipient mismatch, and overly strong claims
 - No backend, analytics, automated sending, or bulk scraping
 
 ## Install from source
@@ -89,6 +91,10 @@ Unit tests cover prompt construction, response parsing, storage behavior, API fa
 ## Evaluation
 
 `npm run evaluate` executes deterministic checks against anonymized fixtures for connection-note length, recipient-name inclusion, required grounding phrases, and placeholder leakage. This is an engineering regression suite, not a scientific model-quality benchmark. See [docs/EVALUATION.md](docs/EVALUATION.md).
+
+## Demo
+
+The popup preview above shows the review-first workflow: setup a local sender profile, preview visible recipient data, choose an outreach goal, generate, then edit and copy manually. No action is sent automatically.
 
 ## Responsible use
 
