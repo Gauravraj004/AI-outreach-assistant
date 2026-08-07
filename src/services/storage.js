@@ -14,11 +14,30 @@ export async function clearLocalData(storage = chrome.storage.local) {
   await storage.remove([STORAGE_KEYS.SETTINGS, STORAGE_KEYS.DRAFTS]);
 }
 
-export async function saveDraft(draft, storage = chrome.storage.local) {
+export async function loadDrafts(storage = chrome.storage.local) {
   const result = await storage.get(STORAGE_KEYS.DRAFTS);
-  const drafts = Array.isArray(result[STORAGE_KEYS.DRAFTS])
+  return Array.isArray(result[STORAGE_KEYS.DRAFTS])
     ? result[STORAGE_KEYS.DRAFTS]
     : [];
+}
+
+export async function clearDrafts(storage = chrome.storage.local) {
+  await storage.remove([STORAGE_KEYS.DRAFTS]);
+}
+
+export async function exportLocalData(storage = chrome.storage.local) {
+  const settings = await loadSettings(storage);
+  const drafts = await loadDrafts(storage);
+  return {
+    schemaVersion: 1,
+    exportedAt: new Date().toISOString(),
+    settings: { ...settings, apiKey: undefined },
+    drafts,
+  };
+}
+
+export async function saveDraft(draft, storage = chrome.storage.local) {
+  const drafts = await loadDrafts(storage);
   const next = [
     { ...draft, createdAt: new Date().toISOString() },
     ...drafts,

@@ -31,6 +31,29 @@ describe("generateDraft", () => {
     expect(fetchImpl.mock.calls[0][0]).not.toContain("secret");
   });
 
+  it("includes an opted-in inline document with a generation request", async () => {
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      json: async () => ({
+        candidates: [{ content: { parts: [{ text: '{"message":"Hi"}' }] } }],
+      }),
+    }));
+    await generateDraft({
+      apiKey: "secret",
+      modelName: "gemini-test",
+      prompt: "summarize this resume",
+      maxOutputTokens: 100,
+      attachments: [
+        { inlineData: { mimeType: "application/pdf", data: "JVBERi0=" } },
+      ],
+      fetchImpl,
+    });
+    const body = JSON.parse(fetchImpl.mock.calls[0][1].body);
+    expect(body.contents[0].parts[0].inlineData.mimeType).toBe(
+      "application/pdf",
+    );
+  });
+
   it("classifies quota failures", async () => {
     const fetchImpl = vi.fn(async () => ({
       ok: false,

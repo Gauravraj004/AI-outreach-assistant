@@ -206,6 +206,17 @@ small,
 .helper {
   font-size: 11px;
 }
+.setup-steps {
+  display: grid;
+  gap: 3px;
+  margin: 12px 0 0;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.onboarding h2 {
+  margin-top: 2px;
+}
 small {
   display: block;
   font-size: 10px;
@@ -410,6 +421,39 @@ input::placeholder {
 .settings-actions {
   margin-top: 14px;
 }
+.resume-import {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 9px;
+}
+.resume-import input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+.resume-import-button {
+  min-height: 32px;
+  padding: 6px 10px;
+  font-size: 11px;
+  cursor: pointer;
+}
+.resume-import .helper {
+  margin: 0;
+}
+.resume-analysis {
+  display: grid;
+  gap: 9px;
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid rgba(124, 109, 242, 0.25);
+  border-radius: 10px;
+  background: rgba(124, 109, 242, 0.08);
+}
+.resume-analysis .button {
+  width: 100%;
+}
 
 .profile-name {
   font-weight: 750;
@@ -443,6 +487,40 @@ input::placeholder {
 }
 .results .helper {
   margin: 8px 0 12px;
+}
+.draft-warnings {
+  margin: 8px 0 12px;
+  padding-left: 18px;
+  color: #ffe4a8;
+  font-size: 11px;
+}
+.draft-history-list {
+  display: grid;
+  gap: 7px;
+  max-height: 180px;
+  margin: 10px 0 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+.draft-history-item {
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #0c111c;
+  color: #cbd3e1;
+  padding: 8px 9px;
+  font-size: 11px;
+  line-height: 1.4;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.draft-history-item:hover,
+.draft-history-item:focus-visible {
+  border-color: var(--accent);
+  color: var(--text);
 }
 
 .alert {
