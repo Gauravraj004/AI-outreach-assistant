@@ -444,6 +444,34 @@ input::placeholder {
 .results .helper {
   margin: 8px 0 12px;
 }
+.draft-history-list {
+  display: grid;
+  gap: 7px;
+  max-height: 180px;
+  margin: 10px 0 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+.draft-history-item {
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #0c111c;
+  color: #cbd3e1;
+  padding: 8px 9px;
+  font-size: 11px;
+  line-height: 1.4;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.draft-history-item:hover,
+.draft-history-item:focus-visible {
+  border-color: var(--accent);
+  color: var(--text);
+}
 
 .alert {
   margin-top: 10px;

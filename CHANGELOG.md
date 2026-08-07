@@ -2,6 +2,12 @@
 
 This project follows [Semantic Versioning](https://semver.org/).
 
+## Unreleased
+
+### Added
+
+- Local recent-draft history with explicit restore and clear controls
+
 ## 1.0.0 - 2026-08-06
 
 ### Added
