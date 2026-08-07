@@ -19,6 +19,7 @@ Writing relevant outreach takes research and care. This project reduces blank-pa
 - Direct-message and connection-note workflows
 - Explicit preview and consent before profile data leaves the browser
 - Configurable tone, length, sender profile, and Gemini model
+- Guided in-extension sender-profile setup, with local resume import and review
 - Bring-your-own-key setup stored in Chrome local extension storage
 - API key sent through the `x-goog-api-key` header instead of the URL
 - Robust profile extraction with noise removal, deduplication, and a 12,000-character cap
@@ -45,7 +46,7 @@ Then:
 2. Enable **Developer mode**.
 3. Select **Load unpacked**.
 4. Choose the generated `dist/` folder.
-5. Open the extension settings and add a dedicated [Gemini API key](https://aistudio.google.com/apikey), your name, and a truthful sender profile.
+5. Open the extension settings and add a dedicated [Gemini API key](https://aistudio.google.com/apikey). Upload a PDF, `.txt`, or `.md` resume once; the extension reads it locally. If you opt in, **Create profile** uses one Gemini request to create an editable sender profile and prefill your name when clear. Review and save it before generating outreach.
 6. Visit a LinkedIn member profile, preview the extracted information, approve the request, and generate a draft.
 
 ## Data flow
@@ -98,6 +99,10 @@ Use the extension for relevant, truthful, low-volume communication. Follow Linke
 - Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
 - Report vulnerabilities using the instructions in [SECURITY.md](SECURITY.md).
 - Review planned changes in [CHANGELOG.md](CHANGELOG.md).
+
+## Author
+
+Created and maintained by [Gaurav Raj](https://github.com/Gauravraj004).
 
 ## License
 

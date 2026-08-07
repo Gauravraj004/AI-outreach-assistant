@@ -28,3 +28,28 @@ export function parseDraftResponse(rawResponse) {
       : "other",
   };
 }
+
+export function parseSenderProfileResponse(rawResponse) {
+  const cleaned = String(rawResponse || "")
+    .replace(/^```(?:json)?\s*/i, "")
+    .replace(/\s*```$/, "")
+    .trim();
+
+  let parsed;
+  try {
+    parsed = JSON.parse(cleaned);
+  } catch {
+    throw new Error("Gemini returned an unexpected profile format.");
+  }
+
+  const senderContext = String(parsed.senderContext || "").trim();
+  if (senderContext.length < 30)
+    throw new Error("Gemini did not return a usable sender profile.");
+
+  return {
+    senderName: String(parsed.senderName || "")
+      .trim()
+      .slice(0, 80),
+    senderContext: senderContext.slice(0, 6000),
+  };
+}
